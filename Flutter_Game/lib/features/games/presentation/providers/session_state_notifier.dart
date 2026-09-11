@@ -172,9 +172,9 @@ class SessionStateNotifier extends Notifier<SessionState> {
         );
 
         if (aiResponse != null) {
-          // Store the recommended difficulty in difficultyProvider so the next game session automatically picks it up (Rule 7).
+          // Store the recommended difficulty in the game-specific state (Task 4).
           ref
-              .read(difficultyProvider.notifier)
+              .read(gameDifficultyProvider(currentSession.gameType).notifier)
               .select(aiResponse.recommendedDifficulty);
         }
       } catch (_) {
@@ -203,12 +203,6 @@ class SessionStateNotifier extends Notifier<SessionState> {
 }
 
 /// App-lifetime provider.
-///
-/// [startSession] and [endSession] perform async DB work while no widget is
-/// listening (game menus only `ref.read` the notifier), so an autoDispose
-/// provider would be disposed mid-await and throw "Ref used after dispose",
-/// deadening the Start Game button and result persistence. State is instead
-/// cleared explicitly via [SessionStateNotifier.reset] on every Start Game.
 final sessionNotifierProvider =
     NotifierProvider<SessionStateNotifier, SessionState>(
   SessionStateNotifier.new,

@@ -2,6 +2,24 @@
 
 AI-powered adaptive difficulty and clinical cognitive analysis backend for the SMARAN cognitive gaming platform.
 
+## 📐 End-to-End Pipeline Architecture
+
+```
+Flutter Game
+    ↓
+GameResult Metrics
+    ↓
+SmaranAiService
+    ↓
+FastAPI Backend
+    ↓
+SMARAN Adaptive Model (RandomForest Pipeline)
+    ↓
+Recommended Difficulty
+    ↓
+Flutter Game-Specific Difficulty State (gameDifficultyProvider)
+```
+
 ## What it does
 
 The backend receives cognitive game session metrics from the SMARAN Flutter application and uses a trained machine learning pipeline to recommend the next difficulty level and evaluate Cognitive Performance Scores (CPS).
@@ -25,7 +43,7 @@ python -m uvicorn main:app --reload
 ```
 
 Exposed Endpoints:
-- `GET /` — Service status & API index.
+- `GET /` — API welcome index & docs.
 - `GET /health` — Service health check.
 - `POST /predict-difficulty` — Adaptive difficulty recommendation.
 - `POST /analyze-session` — Full CPS scoring & acute drop anomaly detection.
@@ -69,3 +87,10 @@ Note: Does NOT require `patient_id` or `attempts`.
   "caregiver_summary": "Performance supports increasing the challenge level."
 }
 ```
+
+## ⚠️ Important Scientific & Clinical Disclaimers
+
+1. **Prototype Model Notice**: The adaptive difficulty model is currently a prototype trained and evaluated using synthetic game-session telemetry data.
+2. **Kaggle Dataset Scope**: The Kaggle cognitive dataset is used for baseline cognitive-impairment research/experimentation and is NOT used directly as the live game difficulty target.
+3. **Non-Diagnostic Tool**: This system is strictly designed for real-time game difficulty adjustment to keep elder players comfortably engaged. It is NOT a dementia diagnosis tool.
+4. **Validation Requirements**: Real deployment requires ethically collected longitudinal game data and further validation.

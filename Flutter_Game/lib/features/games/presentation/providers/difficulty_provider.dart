@@ -3,18 +3,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cognitive_care_games/features/games/domain/value_objects/difficulty.dart';
 import 'package:cognitive_care_games/features/games/domain/value_objects/game_type.dart';
 
-// ── Difficulty provider ───────────────────────────────────────────────────────
+// ── Per-Game Difficulty Provider ──────────────────────────────────────────────
 
-/// In Riverpod 3.x, StateProvider was removed. Use Notifier instead.
-class DifficultyNotifier extends Notifier<Difficulty> {
+/// NotifierFamily maintaining game-specific difficulty states.
+///
+/// Ensures Memory Matching difficulty updates do NOT leak into or overwrite
+/// Pattern Recognition difficulty state.
+class GameDifficultyNotifier extends FamilyNotifier<Difficulty, GameType> {
   @override
-  Difficulty build() => Difficulty.easy;
+  Difficulty build(final GameType arg) => Difficulty.easy;
 
   void select(final Difficulty d) => state = d;
 }
 
+final gameDifficultyProvider =
+    NotifierProviderFamily<GameDifficultyNotifier, Difficulty, GameType>(
+  GameDifficultyNotifier.new,
+);
+
+// ── Backward-compatible global helper ─────────────────────────────────────────
+
+class DifficultyNotifier extends Notifier<Difficulty> {
+  @override
+  Difficulty build() => ref.watch(gameDifficultyProvider(GameType.memoryMatching));
+
+  void select(final Difficulty d) {
+    ref.read(gameDifficultyProvider(GameType.memoryMatching).notifier).select(d);
+  }
+}
+
 final difficultyProvider =
-    NotifierProvider.autoDispose<DifficultyNotifier, Difficulty>(
+    NotifierProvider<DifficultyNotifier, Difficulty>(
   DifficultyNotifier.new,
 );
 
@@ -28,6 +47,6 @@ class GameTypeNotifier extends Notifier<GameType> {
 }
 
 final gameTypeProvider =
-    NotifierProvider.autoDispose<GameTypeNotifier, GameType>(
+    NotifierProvider<GameTypeNotifier, GameType>(
   GameTypeNotifier.new,
 );

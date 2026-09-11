@@ -4,6 +4,26 @@
 
 ---
 
+## 📐 End-to-End System Architecture
+
+```
+Flutter Game
+    ↓
+GameResult Metrics
+    ↓
+SmaranAiService
+    ↓
+FastAPI Backend
+    ↓
+SMARAN Adaptive Model (RandomForest Pipeline)
+    ↓
+Recommended Difficulty
+    ↓
+Flutter Game-Specific Difficulty State (gameDifficultyProvider)
+```
+
+---
+
 ## 🏗️ Repository Architecture
 
 This monorepo consolidates all project components into a unified structure:
@@ -26,7 +46,8 @@ SMARAN/
 * **Games**:
   * **Memory Matching**: Visual recall and focus training.
   * **Pattern Recognition**: Sequence recognition and logical reasoning.
-* **AI Integration**: Automatically sends session telemetry to the AI backend (`POST /predict-difficulty`) on session completion and pre-selects recommended difficulty for the next session.
+* **AI Integration**: Automatically sends session telemetry to the AI backend (`POST /predict-difficulty`) on session completion and updates game-specific difficulty state (`gameDifficultyProvider(GameType)`).
+* **Per-Game State**: Memory Matching recommendation updates remain isolated to Memory Matching, while Pattern Recognition recommendation updates remain isolated to Pattern Recognition.
 * **Localization**: Fully integrated 5-language localization inside `lib/l10n/`.
 
 ### 2. 🌐 `Multilingual/`
@@ -42,6 +63,7 @@ SMARAN/
 ### 4. ⚡ `AI-Backend/`
 * **Technologies**: Python 3.11, FastAPI, Uvicorn, Scikit-Learn.
 * **Endpoints**:
+  * `GET /` — API welcome index & docs.
   * `GET /health` — Service health status.
   * `POST /predict-difficulty` — Predicts optimal difficulty level based on session accuracy, completion rate, response time, errors, and hints used.
   * `POST /analyze-session` — Full diagnostic report, CPS scores, and acute drop anomaly alerts.
@@ -88,3 +110,12 @@ For production deployment, pass the custom production API base URL at build/run 
 
 * **Local Persistence First**: Session metrics are saved to local SQLite (`Drift`) **before** sending remote network requests.
 * **Graceful Failure Fallback**: If the API is offline, unreachable, or times out (5s), the AI service returns `null` gracefully. The game continues uninterrupted, retaining the current difficulty level without crashing.
+
+---
+
+## ⚠️ Important Scientific & Clinical Disclaimers
+
+1. **Prototype Model Notice**: The adaptive difficulty model is currently a prototype trained and evaluated using synthetic game-session telemetry data designed to model senior interaction patterns.
+2. **Kaggle Dataset Scope**: The Kaggle cognitive dataset is utilized strictly for baseline cognitive-impairment research and multi-feature experimentation. It is **NOT** used directly as a live game difficulty target.
+3. **Non-Diagnostic Tool**: This system is strictly designed for **real-time game difficulty adjustment** to keep elder players comfortably engaged. It is **NOT** a clinical dementia diagnosis or medical assessment tool.
+4. **Validation Requirements**: Production deployment requires ethically collected longitudinal game telemetry data and rigorous clinical validation.

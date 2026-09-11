@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Literal, Optional
 from pathlib import Path
@@ -14,6 +15,15 @@ app = FastAPI(
     title="SMARAN AI Backend",
     description="AI-powered adaptive difficulty & clinical cognitive monitoring API for SMARAN cognitive games",
     version="4.0.0"
+)
+
+# Enable CORS for Flutter Web, Desktop, and Mobile clients
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
