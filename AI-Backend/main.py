@@ -103,8 +103,23 @@ def get_difficulty_message(
 
 
 # --------------------------------------------------
-# Health check
+# Root Welcome & Health Check Endpoints
 # --------------------------------------------------
+
+@app.get("/")
+def root():
+    return {
+        "status": "online",
+        "service": "SMARAN AI Backend API",
+        "version": "4.0.0",
+        "docs_url": "/docs",
+        "health_url": "/health",
+        "endpoints": {
+            "predict_difficulty": "POST /predict-difficulty",
+            "analyze_session": "POST /analyze-session"
+        }
+    }
+
 
 @app.get("/health")
 def health_check():
@@ -161,19 +176,15 @@ def predict_difficulty(session: GameSession):
 
 @app.post("/analyze-session")
 def analyze_session(session: GameSession):
-    # Predict difficulty
     diff_res = predict_difficulty(session)
 
-    # Compute CPS Score (0-100)
     time_sec = session.response_time_ms / 1000.0
     cps_score = min(100.0, max(30.0, round(session.accuracy * 70.0 + (60.0 - min(60.0, time_sec)) * 0.5 - session.errors * 1.5, 2)))
 
-    # Compute Sub-Scores
     memory_idx = round(min(100.0, session.accuracy * 100.0), 1)
     speed_idx = round(min(100.0, max(20.0, (1.0 - min(1.0, time_sec / 90.0)) * 100.0)), 1)
     executive_idx = round(min(100.0, max(10.0, session.completion_rate * 100.0 - session.errors * 5.0)), 1)
 
-    # Anomaly checks
     is_anomaly = session.accuracy < 0.4 or session.errors > 6
     alert_msg = "Acute performance drop detected: high error count or low accuracy." if is_anomaly else "Normal session bounds."
 
