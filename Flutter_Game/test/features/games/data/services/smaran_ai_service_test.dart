@@ -15,7 +15,7 @@ import 'smaran_ai_service_test.mocks.dart';
 
 void main() {
   late MockClient mockHttpClient;
-  late SmaranAiService smaranAiService;
+  late SmaranAiService defaultSmaranAiService;
 
   final testGameResult = GameResult(
     id: 'res-123',
@@ -32,11 +32,23 @@ void main() {
 
   setUp(() {
     mockHttpClient = MockClient();
-    smaranAiService = SmaranAiService(client: mockHttpClient);
+    defaultSmaranAiService = SmaranAiService(client: mockHttpClient);
   });
 
-  group('SmaranAiService', () {
-    test('predictDifficulty sends correct JSON payload excluding patient_id and attempts', () async {
+  group('SmaranAiService Configuration & URL Resolution', () {
+    test('defaults to local development URL http://127.0.0.1:8000 when no baseUrl is provided', () {
+      expect(defaultSmaranAiService.baseUrl, equals('http://127.0.0.1:8000'));
+    });
+
+    test('uses custom URL passed through configuration constructor', () {
+      const customUrl = 'http://192.168.1.100:8000';
+      final customService = SmaranAiService(client: mockHttpClient, baseUrl: customUrl);
+      expect(customService.baseUrl, equals(customUrl));
+    });
+  });
+
+  group('SmaranAiService API Integration', () {
+    test('predictDifficulty sends correct JSON payload excluding patient_id and attempts to default local URL', () async {
       when(mockHttpClient.post(
         Uri.parse('http://127.0.0.1:8000/predict-difficulty'),
         headers: {'Content-Type': 'application/json'},
@@ -50,7 +62,7 @@ void main() {
             200,
           ));
 
-      final response = await smaranAiService.predictDifficulty(
+      final response = await defaultSmaranAiService.predictDifficulty(
         gameType: GameType.memoryMatching,
         currentDifficulty: Difficulty.medium,
         result: testGameResult,
@@ -80,19 +92,52 @@ void main() {
       expect(capturedJson['errors'], 2);
       expect(capturedJson['hints_used'], 1);
 
-      // Verify omitted fields per requirements
+      // Verify omitted fields
       expect(capturedJson.containsKey('patient_id'), false);
       expect(capturedJson.containsKey('attempts'), false);
     });
 
-    test('predictDifficulty fails gracefully on HTTP error and returns null', () async {
+    test('predictDifficulty respects custom configured URL when sending request', () async {
+      const customUrl = 'http://192.168.1.50:8000';
+      final customService = SmaranAiService(client: mockHttpClient, baseUrl: customUrl);
+
+      when(mockHttpClient.post(
+        Uri.parse('$customUrl/predict-difficulty'),
+        headers: {'Content-Type': 'application/json'},
+        body: anyNamed('body'),
+      )).thenAnswer((_) async => http.Response(
+            jsonEncode({
+              'recommended_level': 'Medium',
+              'patient_message': 'Comfortable level maintained.',
+              'caregiver_summary': 'Performance stable.',
+            }),
+            200,
+          ));
+
+      final response = await customService.predictDifficulty(
+        gameType: GameType.patternRecognition,
+        currentDifficulty: Difficulty.medium,
+        result: testGameResult,
+      );
+
+      expect(response, isNotNull);
+      expect(response!.recommendedDifficulty, Difficulty.medium);
+
+      verify(mockHttpClient.post(
+        Uri.parse('$customUrl/predict-difficulty'),
+        headers: {'Content-Type': 'application/json'},
+        body: anyNamed('body'),
+      )).called(1);
+    });
+
+    test('predictDifficulty fails gracefully on HTTP error status and returns null', () async {
       when(mockHttpClient.post(
         any,
         headers: anyNamed('headers'),
         body: anyNamed('body'),
       )).thenAnswer((_) async => http.Response('Server Error', 500));
 
-      final response = await smaranAiService.predictDifficulty(
+      final response = await defaultSmaranAiService.predictDifficulty(
         gameType: GameType.patternRecognition,
         currentDifficulty: Difficulty.easy,
         result: testGameResult,
@@ -101,14 +146,14 @@ void main() {
       expect(response, isNull);
     });
 
-    test('predictDifficulty fails gracefully on exception and returns null', () async {
+    test('predictDifficulty fails gracefully on network timeout or exception and returns null', () async {
       when(mockHttpClient.post(
         any,
         headers: anyNamed('headers'),
         body: anyNamed('body'),
       )).thenThrow(Exception('Network timeout'));
 
-      final response = await smaranAiService.predictDifficulty(
+      final response = await defaultSmaranAiService.predictDifficulty(
         gameType: GameType.patternRecognition,
         currentDifficulty: Difficulty.easy,
         result: testGameResult,
