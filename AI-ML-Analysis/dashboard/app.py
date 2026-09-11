@@ -18,9 +18,13 @@ sys.path.insert(0, str(ANALYSIS_DIR))
 try:
     from clinical_report_generator import ClinicalReportGenerator
     from anomaly_detector import CognitiveAnomalyDetector
+    from localization.translator import MultilingualTranslator
 except ImportError:
     ClinicalReportGenerator = None
     CognitiveAnomalyDetector = None
+    MultilingualTranslator = None
+
+translator = MultilingualTranslator() if MultilingualTranslator else None
 
 # Set page config
 st.set_page_config(
@@ -158,6 +162,7 @@ if section == "1. Live AI Prediction":
         st.subheader("Game Session Telemetry Input")
         g_type = st.selectbox("Game Type", ["Memory Matching", "Pattern Recognition"])
         curr_diff = st.selectbox("Current Difficulty", ["Easy", "Medium", "Hard"], index=1)
+        selected_lang = st.selectbox("Language / regional dialect", ["English", "Hindi", "Assamese", "Mizo", "Khasi"], index=0)
         accuracy_pct = st.slider("Accuracy (%)", min_value=0.0, max_value=100.0, value=85.0, step=1.0)
         comp_pct = st.slider("Completion Rate (%)", min_value=0.0, max_value=100.0, value=100.0, step=1.0)
         resp_sec = st.number_input("Response Time (seconds)", min_value=0.5, max_value=180.0, value=25.0, step=0.5)
@@ -181,8 +186,14 @@ if section == "1. Live AI Prediction":
                     badge = color_map.get(pred_level, "⚪")
 
                     st.markdown(f"### Recommended Level: {badge} **{pred_level}**")
+
+                    # Fetch localized prompt from MultilingualTranslator
+                    if translator:
+                        localized_prompt = translator.get_prompt(pred_level, selected_lang.lower())
+                    else:
+                        localized_prompt = pat_msg
                     
-                    st.info(f"🗣️ **Patient-Friendly Message:**  \n\"{pat_msg}\"")
+                    st.info(f"🗣️ **Patient-Friendly Message [{selected_lang.upper()}]:**  \n\"{localized_prompt}\"")
                     st.success(f"📋 **Caregiver Summary:**  \n\"{cg_sum}\"")
 
                     st.markdown("#### Input DataFrame Sent to Pipeline:")
