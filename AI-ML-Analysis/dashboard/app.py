@@ -244,11 +244,11 @@ elif section == "2. Model Performance":
 
 
 # -----------------------------------------------------------------------------
-# SECTION 3: ADAPTIVE DIFFICULTY ANALYSIS
+# SECTION 3: ADAPTIVE DIFFICULTY ANALYSIS & GRAPHICAL CHARTS
 # -----------------------------------------------------------------------------
 elif section == "3. Adaptive Difficulty Analysis":
-    st.header("3. Adaptive Difficulty Analysis")
-    st.markdown("Visualizing prediction behavior across 1,000 simulated telemetry sessions.")
+    st.header("3. Adaptive Difficulty Analysis & Graphical Visualizations")
+    st.markdown("Visualizing AI decision boundaries, recommendation distributions, and cognitive trends across 1,000 simulated patient telemetry sessions.")
 
     if model is None:
         st.error("Model unavailable. Cannot perform analysis.")
@@ -282,33 +282,130 @@ elif section == "3. Adaptive Difficulty Analysis":
                 records.append({
                     "game_type": "Memory Matching" if gt == "memory_matching" else "Pattern Recognition",
                     "current_difficulty": cd.capitalize(),
+                    "accuracy_pct": acc * 100,
+                    "response_time_sec": resp / 1000.0,
+                    "errors": errs,
+                    "hints": hints,
                     "recommended_level": pred
                 })
             return pd.DataFrame(records)
 
         df_sim = run_simulation()
 
+        import plotly.express as px
+        import plotly.graph_objects as go
+
+        # Row 1: Distribution Bar Charts
         c1, c2 = st.columns(2)
 
         with c1:
-            st.subheader("Recommendation Distribution (Overall)")
+            st.subheader("📊 Overall Recommendation Distribution")
             dist_counts = df_sim["recommended_level"].value_counts().reset_index()
             dist_counts.columns = ["Recommended Level", "Count"]
-            st.bar_chart(dist_counts.set_index("Recommended Level"))
+            fig_bar = px.bar(
+                dist_counts, x="Recommended Level", y="Count",
+                color="Recommended Level",
+                color_discrete_map={"Easy": "#2ecc71", "Medium": "#f1c40f", "Hard": "#e74c3c"},
+                title="Total Recommended Levels (1,000 Sessions)"
+            )
+            st.plotly_chart(fig_bar, use_container_width=True)
 
         with c2:
-            st.subheader("Game-wise Recommendation Distribution")
-            game_dist = df_sim.groupby(["game_type", "recommended_level"]).size().unstack(fill_value=0)
-            st.bar_chart(game_dist)
+            st.subheader("🎮 Game-wise Recommendation Distribution")
+            game_dist = df_sim.groupby(["game_type", "recommended_level"]).size().reset_index(name="Count")
+            fig_game = px.bar(
+                game_dist, x="game_type", y="Count", color="recommended_level",
+                barmode="group",
+                color_discrete_map={"Easy": "#2ecc71", "Medium": "#f1c40f", "Hard": "#e74c3c"},
+                title="Memory Matching vs Pattern Recognition"
+            )
+            st.plotly_chart(fig_game, use_container_width=True)
 
-        st.subheader("Transition Matrix (Current Difficulty ➡️ Recommended Level)")
-        trans_matrix = pd.crosstab(
-            df_sim["current_difficulty"],
-            df_sim["recommended_level"],
-            margins=True,
-            margins_name="Total"
+        st.markdown("---")
+
+        # Row 2: Decision Boundary Scatter Plot
+        st.subheader("🎯 AI Decision Boundary: Accuracy vs. Response Time")
+        st.markdown("Interactive scatter plot demonstrating how accuracy and response time influence AI difficulty recommendations.")
+        
+        fig_scatter = px.scatter(
+            df_sim,
+            x="accuracy_pct",
+            y="response_time_sec",
+            color="recommended_level",
+            symbol="game_type",
+            size="errors",
+            hover_data=["current_difficulty", "hints"],
+            labels={"accuracy_pct": "Accuracy (%)", "response_time_sec": "Response Time (sec)"},
+            color_discrete_map={"Easy": "#2ecc71", "Medium": "#f1c40f", "Hard": "#e74c3c"},
+            title="Telemetry Decision Boundary Clusters"
         )
-        st.dataframe(trans_matrix, use_container_width=True)
+        st.plotly_chart(fig_scatter, use_container_width=True)
+
+        st.markdown("---")
+
+        # Row 3: Transition Matrix Heatmap & Data Table
+        c_hm, c_tbl = st.columns([1.2, 1.0])
+
+        with c_hm:
+            st.subheader("🔥 Transition Matrix Heatmap")
+            ct_no_margins = pd.crosstab(df_sim["current_difficulty"], df_sim["recommended_level"])
+            fig_hm = px.imshow(
+                ct_no_margins,
+                labels=dict(x="Recommended Level", y="Current Difficulty", color="Sessions"),
+                x=ct_no_margins.columns,
+                y=ct_no_margins.index,
+                color_continuous_scale="Viridis",
+                text_auto=True,
+                title="Difficulty Shift Density"
+            )
+            st.plotly_chart(fig_hm, use_container_width=True)
+
+        with c_tbl:
+            st.subheader("📋 Transition Matrix Data Table")
+            trans_matrix = pd.crosstab(
+                df_sim["current_difficulty"],
+                df_sim["recommended_level"],
+                margins=True,
+                margins_name="Total"
+            )
+            st.dataframe(trans_matrix, use_container_width=True)
+
+        st.markdown("---")
+
+        # Row 4: Longitudinal Cognitive Performance Score (CPS) Trend
+        st.subheader("📈 Patient Cognitive Performance Score (CPS) 30-Day Trend")
+        st.markdown("Simulated 30-day cognitive tracking illustrating longitudinal CPS progression and adaptive difficulty adjustments.")
+        
+        np.random.seed(42)
+        days = np.arange(1, 31)
+        cps_scores = 65 + np.cumsum(np.random.normal(0.8, 2.5, size=30))
+        cps_scores = np.clip(cps_scores, 40, 98)
+
+        df_trend = pd.DataFrame({
+            "Day": days,
+            "CPS Score": np.round(cps_scores, 1),
+            "Target Baseline": 75.0
+        })
+
+        fig_trend = go.Figure()
+        fig_trend.add_trace(go.Scatter(
+            x=df_trend["Day"], y=df_trend["CPS Score"],
+            mode="lines+markers", name="Patient CPS Score",
+            line=dict(color="#3498db", width=3),
+            marker=dict(size=8)
+        ))
+        fig_trend.add_trace(go.Scatter(
+            x=df_trend["Day"], y=df_trend["Target Baseline"],
+            mode="lines", name="Target Baseline (75.0)",
+            line=dict(color="#e74c3c", width=2, dash="dash")
+        ))
+        fig_trend.update_layout(
+            title="30-Day Cognitive Performance Score (CPS) Trajectory",
+            xaxis_title="Day of Evaluation",
+            yaxis_title="CPS Score (0 - 100)",
+            template="plotly_white"
+        )
+        st.plotly_chart(fig_trend, use_container_width=True)
 
 
 # -----------------------------------------------------------------------------
@@ -318,7 +415,9 @@ elif section == "4. Random Stress Test":
     st.header("4. Random Stress Test (100 Valid Sessions)")
     st.markdown("Run 100 randomly generated game-session inputs through the active model pipeline.")
 
-    if st.button("🎲 Run 100 Random Valid Sessions", type="primary"):
+    rerun = st.button("🎲 Re-run 100 Random Valid Sessions", type="primary")
+
+    if "random_stress_results" not in st.session_state or rerun:
         if model is None:
             st.error("Model is not loaded.")
         else:
@@ -356,31 +455,33 @@ elif section == "4. Random Stress Test":
                 except Exception:
                     failure_count += 1
 
-            st.success(f"✅ **Processed:** {success_count} / 100 sessions successfully.")
-            if failure_count > 0:
-                st.error(f"❌ **Failures:** {failure_count}")
-            else:
-                st.info("🎉 **Failures:** 0")
+            st.session_state["random_stress_results"] = (success_count, failure_count, pd.DataFrame(results))
 
-            df_res = pd.DataFrame(results)
+    if "random_stress_results" in st.session_state:
+        success_count, failure_count, df_res = st.session_state["random_stress_results"]
+        st.success(f"✅ **Processed:** {success_count} / 100 sessions successfully.")
+        if failure_count > 0:
+            st.error(f"❌ **Failures:** {failure_count}")
+        else:
+            st.info("🎉 **Failures:** 0")
 
-            st.subheader("Recommendation Breakdown")
-            cnt_series = df_res["recommended_level"].value_counts()
+        st.subheader("Recommendation Breakdown")
+        cnt_series = df_res["recommended_level"].value_counts()
 
-            rc1, rc2, rc3 = st.columns(3)
-            with rc1:
-                e_cnt = cnt_series.get("Easy", 0)
-                st.metric("Easy Recommended", f"{e_cnt} ({e_cnt}% )")
-            with rc2:
-                m_cnt = cnt_series.get("Medium", 0)
-                st.metric("Medium Recommended", f"{m_cnt} ({m_cnt}% )")
-            with rc3:
-                h_cnt = cnt_series.get("Hard", 0)
-                st.metric("Hard Recommended", f"{h_cnt} ({h_cnt}% )")
+        rc1, rc2, rc3 = st.columns(3)
+        with rc1:
+            e_cnt = cnt_series.get("Easy", 0)
+            st.metric("Easy Recommended", f"{e_cnt} ({e_cnt}%)")
+        with rc2:
+            m_cnt = cnt_series.get("Medium", 0)
+            st.metric("Medium Recommended", f"{m_cnt} ({m_cnt}%)")
+        with rc3:
+            h_cnt = cnt_series.get("Hard", 0)
+            st.metric("Hard Recommended", f"{h_cnt} ({h_cnt}%)")
 
-            st.subheader("Transition Matrix")
-            ct = pd.crosstab(df_res["current_difficulty"], df_res["recommended_level"], margins=True)
-            st.dataframe(ct, use_container_width=True)
+        st.subheader("Transition Matrix (Current Difficulty ➡️ Recommended Level)")
+        ct = pd.crosstab(df_res["current_difficulty"], df_res["recommended_level"], margins=True, margins_name="Total")
+        st.dataframe(ct, use_container_width=True)
 
 
 # -----------------------------------------------------------------------------
