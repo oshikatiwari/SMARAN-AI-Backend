@@ -1,0 +1,74 @@
+{
+  "supported_languages": ["english", "hindi", "assamese", "mizo", "khasi"],
+  "platform_name": {
+    "english": "AI Cognitive Gaming & Family Reminiscence Platform",
+    "hindi": "एआई संज्ञानात्मक गेमिंग और पारिवारिक स्मृति संस्मरण मंच",
+    "assamese": "এআই সংজ্ঞাত্নক গেমিং আৰু পৰিয়ালৰ স্মৃতি মঞ্চ",
+    "mizo": "AI Hriatna Zirna Hmunleh Chhungkua Hriatrengna",
+    "khasi": "AI Jingkynmaw bad Jingkynmaw iing sem"
+  },
+  "games": {
+    "memory_matching": {
+      "title": {
+        "english": "Family Memory Matching Journey",
+        "hindi": "पारिवारिक यादें मिलान यात्रा",
+        "assamese": "পৰিয়ালৰ স্মৃতি মিলন যাত্ৰা",
+        "mizo": "Chhungkaw Thlalak Inrem Zuk",
+        "khasi": "Ka Jingkynmaw shaphang ka Iingsem"
+      },
+      "instruction": {
+        "english": "Tap matching pairs of family memories and regional symbols",
+        "hindi": "पारिवारिक यादों के मिलते-जुलते जोड़ों पर टैप करें",
+        "assamese": "পৰিয়ালৰ স্মৃতিৰ মিল থকা যোৰাবোৰত টেপ কৰক",
+        "mizo": "Chhungkaw thlalak inang te hi meuh rawh",
+        "khasi": "Kyntuit ki dur iingsem kiba iasnoh lang"
+      }
+    },
+    "pattern_recognition": {
+      "title": {
+        "english": "Cultural Sequence & Pattern Logic",
+        "hindi": "सांस्कृतिक अनुक्रम और पैटर्न तर्क",
+        "assamese": "সাংস্কৃতিক অনুক্ৰম আৰু প্ৰতিৰূপ যুক্তি",
+        "mizo": "Hnam Thil Inrem Thluaia Zirna",
+        "khasi": "Jingithuh ia ka Jingiaid Phawria"
+      },
+      "instruction": {
+        "english": "Identify the next cultural symbol in sequence",
+        "hindi": "अनुक्रम में अगला सांस्कृतिक प्रतीक पहचानें",
+        "assamese": "অনুক্ৰমত পৰৱৰ্তী সাংস্কৃতিক প্ৰতীক চিনাক্ত কৰক",
+        "mizo": "A dawt a thil awm tur thlang rawh",
+        "khasi": "Jied ia ka dur kaba bud ha ka jingiaid"
+      }
+    }
+  },
+  "encouragement_prompts": {
+    "easy": {
+      "english": "Wonderful effort! You are doing great. Let's enjoy another fun memory activity!",
+      "hindi": "बहुत सुंदर प्रयास! आप बहुत अच्छा खेल रहे हैं। चलिए अगला मजेदार स्मृति खेल खेलते हैं!",
+      "assamese": "অতি সুন্দৰ! আপুনি বহুত ভাল খেলিছে। বলক আন এটি ধুনীয়া স্মৃতি খেল খেলো।",
+      "mizo": "Thawk tha tak tling i ni! A nuam dang i zir zel ang u.",
+      "khasi": "Ka jingseimot kaba bha shibun! To ngin ia iaid shakhmat paralok."
+    },
+    "medium": {
+      "english": "Fantastic progress! Your focus is super sharp today. Let's keep exploring!",
+      "hindi": "शानदार प्रगति! आपका ध्यान आज बहुत तेज़ है। चलिए आगे बढ़ते हैं!",
+      "assamese": "চমৎকার উন্নতি! আপোনাৰ মনোযোগ সঁচাকৈয়ে প্রশংসনীয়।",
+      "mizo": "I puitlinna a tha hle mai! I rilru a fim tha hle.",
+      "khasi": "Ka jingkiew kaba khraw! Ka jingmut jong phi ka long kaba shai halor kiei kiei."
+    },
+    "hard": {
+      "english": "Outperforming excellence! You are a master memory explorer today!",
+      "hindi": "असाधारण प्रतिभा! आज आप वाकई एक महान स्मृति विजेता हैं!",
+      "assamese": "অসাধাৰণ দক্ষতা! আপুনি আজি সঁচাকৈয়ে এজন মহান স্মৃতি বিজয়ী!",
+      "mizo": "A tha tawpkhawk hle mai! Vawiin chu i thluak a chak zual hle.",
+      "khasi": "Ka jingshai kaba khraw tarn! Phi long u nongjop uba bakhraw ha ka jingkynmaw."
+    }
+  },
+  "voice_guidance_confirmations": {
+    "english": "Voice guidance set to English.",
+    "hindi": "ध्वनि मार्गदर्शन हिंदी में सेट किया गया है।",
+    "assamese": "অসমীয়া ভাষাত মাতৰ নিৰ্দেশনা সক্ৰিয় কৰা হৈছে।",
+    "mizo": "Aw hmanga kaihhruaina hi Mizo tawngin siam a ni.",
+    "khasi": "Jingpynshai ha ka jien Khasi la pynkyntu."
+  }
+}

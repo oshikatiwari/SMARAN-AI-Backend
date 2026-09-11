@@ -1,0 +1,7 @@
+# Flutter localisation configuration.
+# ARB files live in lib/l10n/ — populated in Milestone 11.
+# generate: true in pubspec.yaml triggers flutter gen-l10n automatically.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations

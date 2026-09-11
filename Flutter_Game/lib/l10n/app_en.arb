@@ -1,0 +1,194 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2026-09-05",
+
+  "appTitle": "Cognitive Care Games",
+  "@appTitle": { "description": "Main application title shown in AppBar" },
+
+  "gameSelectionTitle": "Choose a Game",
+  "@gameSelectionTitle": { "description": "Home screen heading" },
+
+  "gameSelectionSubtitle": "Select a game to begin your session.",
+  "@gameSelectionSubtitle": {},
+
+  "memoryMatchingTitle": "Memory Matching",
+  "@memoryMatchingTitle": { "description": "Game name for Memory Matching" },
+
+  "memoryMatchingDescription": "Flip cards and find matching pairs. Trains recall and focus.",
+  "@memoryMatchingDescription": {},
+
+  "patternRecognitionTitle": "Pattern Recognition",
+  "@patternRecognitionTitle": { "description": "Game name for Pattern Recognition" },
+
+  "patternRecognitionDescription": "Watch the pattern, choose what comes next. Trains logical thinking.",
+  "@patternRecognitionDescription": {},
+
+  "howToPlayHeading": "How to Play",
+  "@howToPlayHeading": {},
+
+  "memoryMatchingHowToPlay": "Flip cards to find matching pairs. Remember where each card is to make matches quickly.",
+  "@memoryMatchingHowToPlay": {},
+
+  "patternRecognitionHowToPlay": "Watch the pattern, then choose what comes next.",
+  "@patternRecognitionHowToPlay": {},
+
+  "selectDifficulty": "Select Difficulty",
+  "@selectDifficulty": {},
+
+  "difficultyEasy": "Easy",
+  "@difficultyEasy": {},
+
+  "difficultyMedium": "Medium",
+  "@difficultyMedium": {},
+
+  "difficultyHard": "Hard",
+  "@difficultyHard": {},
+
+  "difficultyTimeEasy": "3 min",
+  "@difficultyTimeEasy": {},
+
+  "difficultyTimeMedium": "2 min",
+  "@difficultyTimeMedium": {},
+
+  "difficultyTimeHard": "90 sec",
+  "@difficultyTimeHard": {},
+
+  "labelGrid": "Grid",
+  "@labelGrid": {},
+
+  "labelPairs": "Pairs",
+  "@labelPairs": {},
+
+  "labelTime": "Time",
+  "@labelTime": {},
+
+  "labelRounds": "Rounds",
+  "@labelRounds": {},
+
+  "labelType": "Type",
+  "@labelType": {},
+
+  "labelRound": "Round",
+  "@labelRound": {},
+
+  "startGame": "Start Game",
+  "@startGame": {},
+
+  "quitGame": "Quit",
+  "@quitGame": {},
+
+  "keepPlaying": "Keep Playing",
+  "@keepPlaying": {},
+
+  "quitDialogTitle": "Quit Game?",
+  "@quitDialogTitle": {},
+
+  "quitDialogBody": "Your progress will be saved as incomplete.",
+  "@quitDialogBody": {},
+
+  "yourResults": "Your Results",
+  "@yourResults": {},
+
+  "wellDone": "Well Done!",
+  "@wellDone": {},
+
+  "goodTry": "Good Try!",
+  "@goodTry": {},
+
+  "playAgain": "Play Again",
+  "@playAgain": {},
+
+  "backToMenu": "Back to Menu",
+  "@backToMenu": {},
+
+  "labelDuration": "Duration",
+  "@labelDuration": {},
+
+  "labelAccuracy": "Accuracy",
+  "@labelAccuracy": {},
+
+  "labelAttempts": "Attempts",
+  "@labelAttempts": {},
+
+  "labelErrors": "Errors",
+  "@labelErrors": {},
+
+  "labelHintsUsed": "Hints Used",
+  "@labelHintsUsed": {},
+
+  "labelCompletion": "Completion",
+  "@labelCompletion": {},
+
+  "patternTypeNumbers": "Numbers",
+  "@patternTypeNumbers": {},
+
+  "patternTypeColors": "Colors",
+  "@patternTypeColors": {},
+
+  "patternTypeShapes": "Shapes",
+  "@patternTypeShapes": {},
+
+  "patternInstructionNumeric": "What number comes next?",
+  "@patternInstructionNumeric": {},
+
+  "patternInstructionColor": "What color comes next?",
+  "@patternInstructionColor": {},
+
+  "patternInstructionShape": "What shape comes next?",
+  "@patternInstructionShape": {},
+
+  "selectPatternType": "Pattern Type",
+  "@selectPatternType": {},
+
+  "errorGeneric": "An error occurred.",
+  "@errorGeneric": {},
+
+  "errorSaveFailed": "Failed to save game result. Please try again.",
+  "@errorSaveFailed": {},
+
+  "noTimeLimitSymbol": "∞",
+  "@noTimeLimitSymbol": { "description": "Displayed when no time limit is set" },
+
+  "timerSemanticLabel": "Timer: {time}",
+  "@timerSemanticLabel": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+
+  "attemptsSemanticLabel": "{count} attempts",
+  "@attemptsSemanticLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "errorsSemanticLabel": "{count} errors",
+  "@errorsSemanticLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "hintsSemanticLabel": "{count} hints used",
+  "@hintsSemanticLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "roundSemanticLabel": "Round {current} of {total}",
+  "@roundSemanticLabel": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "difficultySemanticLabel": "{difficulty} difficulty",
+  "@difficultySemanticLabel": {
+    "placeholders": {
+      "difficulty": { "type": "String" }
+    }
+  }
+}

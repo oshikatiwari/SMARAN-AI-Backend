@@ -1,10 +1,81 @@
-__pycache__/
-*.pyc
-.venv/
-venv/
-env/
-.env
-.ipynb_checkpoints/
-.vscode/
-.idea/
+# ==============================================================================
+# SMARAN Monorepo Root .gitignore
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Flutter & Dart Build Artifacts
+# ------------------------------------------------------------------------------
+**/build/
+**/.dart_tool/
+**/.pub-cache/
+**/.pub/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/flutter_export_environment.sh
+**/GeneratedPluginRegistrant.swift
+**/GeneratedPluginRegistrant.m
+**/ephemeral/
+**/DerivedData/
+**/*.mode1v3
+**/*.mode2v3
+**/*.moved-aside
+**/*.pbxuser
+**/*.perspectivev3
+**/App.framework
+**/Flutter.framework
+**/Flutter.podspec
+
+# ------------------------------------------------------------------------------
+# 2. Python Caches & Virtual Environments
+# ------------------------------------------------------------------------------
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/.venv/
+**/venv/
+**/env/
+**/ENV/
+**/build/
+**/dist/
+**/*.egg-info/
+
+# ------------------------------------------------------------------------------
+# 3. Jupyter Notebook Checkpoints
+# ------------------------------------------------------------------------------
+**/.ipynb_checkpoints/
+
+# ------------------------------------------------------------------------------
+# 4. IDE & Editor Files
+# ------------------------------------------------------------------------------
+**/.idea/
+**/.vscode/
+**/*.iml
+**/*.swp
+**/*.swo
+
+# ------------------------------------------------------------------------------
+# 5. OS & Temporary Files
+# ------------------------------------------------------------------------------
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ------------------------------------------------------------------------------
+# 6. Environment & Secret Files
+# ------------------------------------------------------------------------------
+.env
+.env.*
+*.key
+*.pem
+*.secret
+
+# ------------------------------------------------------------------------------
+# 7. Model Whitelist (DO NOT IGNORE SMARAN ADAPTIVE PIPELINE MODEL)
+# ------------------------------------------------------------------------------
+!AI-Backend/models/smaran_adaptive_pipeline.joblib

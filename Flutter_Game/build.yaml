@@ -1,0 +1,12 @@
+targets:
+  $default:
+    builders:
+      # Drift code generation
+      drift_dev:
+        options:
+          # Generate named parameters for companions (cleaner API)
+          named_parameters: true
+
+      # Riverpod code generation
+      riverpod_generator:
+        options: {}
