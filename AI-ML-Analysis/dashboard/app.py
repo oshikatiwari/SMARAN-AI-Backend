@@ -263,11 +263,12 @@ elif section == "3. Adaptive Difficulty Analysis":
             for _ in range(1000):
                 gt = random.choice(g_types)
                 cd = random.choice(diffs)
-                acc = round(random.uniform(0.0, 1.0), 4)
-                comp = round(random.uniform(0.0, 1.0), 4)
-                resp = random.randint(500, 60000)
-                errs = random.randint(0, 20)
-                hints = random.randint(0, 10)
+                # Realistic clinical telemetry ranges (permitting high-performing sessions)
+                acc = round(random.uniform(0.3, 1.0), 4)
+                comp = round(random.uniform(0.5, 1.0), 4)
+                resp = random.randint(1000, 25000) # 1s to 25s
+                errs = random.randint(0, 8)
+                hints = random.randint(0, 4)
 
                 input_df = pd.DataFrame([{
                     "game_type": "Memory Matching" if gt == "memory_matching" else "Pattern Recognition",
