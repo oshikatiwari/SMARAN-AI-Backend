@@ -1,6 +1,7 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import Literal
+from typing import Literal, Optional
 from pathlib import Path
 import pandas as pd
 import joblib
@@ -12,8 +13,17 @@ import joblib
 
 app = FastAPI(
     title="SMARAN AI Backend",
-    description="AI-powered adaptive difficulty API for SMARAN cognitive games",
-    version="1.0.0"
+    description="AI-powered adaptive difficulty & clinical cognitive monitoring API for SMARAN cognitive games",
+    version="4.0.0"
+)
+
+# Enable CORS for Flutter Web, Desktop, and Mobile clients
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -40,6 +50,7 @@ class GameSession(BaseModel):
     response_time_ms: int = Field(gt=0)
     errors: int = Field(ge=0)
     hints_used: int = Field(ge=0)
+    preferred_language: Optional[str] = "English"
 
 
 # --------------------------------------------------
@@ -63,7 +74,6 @@ def get_difficulty_message(
 ):
 
     current_value = difficulty_order[current_difficulty]
-
     recommended_value = difficulty_order[recommended_level]
 
     if recommended_value > current_value:
@@ -103,15 +113,31 @@ def get_difficulty_message(
 
 
 # --------------------------------------------------
-# Health check
+# Root Welcome & Health Check Endpoints
 # --------------------------------------------------
+
+@app.get("/")
+def root():
+    return {
+        "status": "online",
+        "service": "SMARAN AI Backend API",
+        "version": "4.0.0",
+        "docs_url": "/docs",
+        "health_url": "/health",
+        "endpoints": {
+            "predict_difficulty": "POST /predict-difficulty",
+            "analyze_session": "POST /analyze-session"
+        }
+    }
+
 
 @app.get("/health")
 def health_check():
 
     return {
         "status": "healthy",
-        "service": "SMARAN AI Backend"
+        "service": "SMARAN AI Backend",
+        "version": "4.0.0"
     }
 
 
@@ -154,8 +180,44 @@ def predict_difficulty(session: GameSession):
     }
 
 
+# --------------------------------------------------
+# Extended Clinical Analysis Endpoint
+# --------------------------------------------------
+
+@app.post("/analyze-session")
+def analyze_session(session: GameSession):
+    diff_res = predict_difficulty(session)
+
+    time_sec = session.response_time_ms / 1000.0
+    cps_score = min(100.0, max(30.0, round(session.accuracy * 70.0 + (60.0 - min(60.0, time_sec)) * 0.5 - session.errors * 1.5, 2)))
+
+    memory_idx = round(min(100.0, session.accuracy * 100.0), 1)
+    speed_idx = round(min(100.0, max(20.0, (1.0 - min(1.0, time_sec / 90.0)) * 100.0)), 1)
+    executive_idx = round(min(100.0, max(10.0, session.completion_rate * 100.0 - session.errors * 5.0)), 1)
+
+    is_anomaly = session.accuracy < 0.4 or session.errors > 6
+    alert_msg = "Acute performance drop detected: high error count or low accuracy." if is_anomaly else "Normal session bounds."
+
+    return {
+        "recommended_level": diff_res["recommended_level"],
+        "patient_message": diff_res["patient_message"],
+        "caregiver_summary": diff_res["caregiver_summary"],
+        "cps_score": cps_score,
+        "cognitive_sub_scores": {
+            "memory_retention_index": memory_idx,
+            "reaction_latency_score": speed_idx,
+            "executive_function_index": executive_idx
+        },
+        "anomaly_alert": {
+            "detected": is_anomaly,
+            "alert_message": alert_msg,
+            "risk_level": "Elevated" if is_anomaly else "Low"
+        }
+    }
+
+
 if __name__ == "__main__":
     import os
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    uvicorn.run("main:app", host="0.0.0.0", port=port)

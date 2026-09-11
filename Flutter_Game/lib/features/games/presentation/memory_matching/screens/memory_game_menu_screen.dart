@@ -15,8 +15,8 @@ import 'memory_game_screen.dart';
 /// Menu screen for Memory Matching — difficulty selection + start button.
 ///
 /// State:
-///   [difficultyProvider] — which difficulty is currently selected.
-///   [sessionNotifierProvider] — read (not watched) at start tap only.
+///   [gameDifficultyProvider(GameType.memoryMatching)] — game-specific difficulty selection.
+///   [sessionNotifierProvider] — read at start tap only.
 ///
 /// Navigation:
 ///   Start → [MemoryGameScreen] (pushes; game screen pops itself on completion)
@@ -28,7 +28,7 @@ class MemoryGameMenuScreen extends ConsumerWidget {
 
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final selectedDifficulty = ref.watch(difficultyProvider);
+    final selectedDifficulty = ref.watch(gameDifficultyProvider(GameType.memoryMatching));
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -56,7 +56,7 @@ class MemoryGameMenuScreen extends ConsumerWidget {
               DifficultySelectorWidget(
                 selectedDifficulty: selectedDifficulty,
                 onSelected: (final d) =>
-                    ref.read(difficultyProvider.notifier).select(d),
+                    ref.read(gameDifficultyProvider(GameType.memoryMatching).notifier).select(d),
               ),
 
               const SizedBox(height: AppDimensions.spacingSmall),

@@ -33,7 +33,7 @@ class PatternGameMenuScreen extends ConsumerWidget {
 
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final selectedDifficulty = ref.watch(difficultyProvider);
+    final selectedDifficulty = ref.watch(gameDifficultyProvider(GameType.patternRecognition));
     final selectedPattern = ref.watch(selectedPatternTypeProvider);
 
     return Scaffold(
@@ -71,7 +71,7 @@ class PatternGameMenuScreen extends ConsumerWidget {
               DifficultySelectorWidget(
                 selectedDifficulty: selectedDifficulty,
                 onSelected: (final d) =>
-                    ref.read(difficultyProvider.notifier).select(d),
+                    ref.read(gameDifficultyProvider(GameType.patternRecognition).notifier).select(d),
               ),
 
               const SizedBox(height: AppDimensions.spacingSmall),

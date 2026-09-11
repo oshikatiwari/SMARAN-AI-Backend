@@ -35,28 +35,37 @@ class SmaranAiResponse {
 
 /// Clean API service for interacting with the SMARAN AI FastAPI Backend.
 ///
-/// Default backend URL: https://smaran-ai-backend.onrender.com
-/// Target Endpoint: POST /predict-difficulty
+/// Configurable API base URL:
+/// Reads `SMARAN_API_BASE_URL` from `--dart-define=SMARAN_API_BASE_URL=...`.
+/// Defaults to local development URL: `http://127.0.0.1:8000`.
 class SmaranAiService {
+  static const String defaultBaseUrl = String.fromEnvironment(
+    'SMARAN_API_BASE_URL',
+    defaultValue: 'http://127.0.0.1:8000',
+  );
+
   SmaranAiService({
     http.Client? client,
-    String baseUrl = 'https://smaran-ai-backend.onrender.com',
+    String? baseUrl,
   })  : _client = client ?? http.Client(),
-        _baseUrl = baseUrl;
+        _baseUrl = baseUrl ?? defaultBaseUrl;
 
   final http.Client _client;
   final String _baseUrl;
+
+  /// Returns the active API base URL.
+  String get baseUrl => _baseUrl;
 
   /// Predicts recommended difficulty for the subsequent game session.
   ///
   /// Sends session telemetry metrics to `POST /predict-difficulty`.
   ///
   /// Compliance Rules:
-  /// - Excludes `patient_id` (Rule 9).
-  /// - Excludes `attempts` (Rule 10: current ML model does not use it).
+  /// - Excludes `patient_id`.
+  /// - Excludes `attempts`.
   /// - Uses `gameType.value` ("memory_matching" | "pattern_recognition").
   /// - Uses `currentDifficulty.value` ("easy" | "medium" | "hard").
-  /// - Fails gracefully on network issues, backend down, or timeout (Rule 12).
+  /// - Fails gracefully on network issues, backend down, or timeout.
   Future<SmaranAiResponse?> predictDifficulty({
     required GameType gameType,
     required Difficulty currentDifficulty,

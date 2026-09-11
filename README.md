@@ -4,6 +4,26 @@
 
 ---
 
+## 📐 End-to-End System Architecture
+
+```
+Flutter Game
+    ↓
+GameResult Metrics
+    ↓
+SmaranAiService
+    ↓
+FastAPI Backend
+    ↓
+SMARAN Adaptive Model (RandomForest Pipeline)
+    ↓
+Recommended Difficulty
+    ↓
+Flutter Game-Specific Difficulty State (gameDifficultyProvider)
+```
+
+---
+
 ## 🏗️ Repository Architecture
 
 This monorepo consolidates all project components into a unified structure:
@@ -13,7 +33,7 @@ SMARAN/
 ├── Flutter_Game/        # Adaptive Cognitive Games (Flame Engine, Riverpod, Drift Database)
 ├── Multilingual/        # 5-Language Localization Documentation & Specifications
 ├── AI-ML-Analysis/      # Kaggle Datasets, Feature Engineering, EDA & Model Training Scripts
-├── AI-Backend/          # Live FastAPI Backend & Deployed Adaptive ML Pipeline
+├── AI-Backend/          # FastAPI AI Backend & Deployed Adaptive ML Pipeline
 └── README.md            # Monorepo Master Guide
 ```
 
@@ -26,7 +46,8 @@ SMARAN/
 * **Games**:
   * **Memory Matching**: Visual recall and focus training.
   * **Pattern Recognition**: Sequence recognition and logical reasoning.
-* **Live AI Integration**: Automatically sends session telemetry to the backend (`POST /predict-difficulty`) on session completion and pre-selects recommended difficulty for the next session.
+* **AI Integration**: Automatically sends session telemetry to the AI backend (`POST /predict-difficulty`) on session completion and updates game-specific difficulty state (`gameDifficultyProvider(GameType)`).
+* **Per-Game State**: Memory Matching recommendation updates remain isolated to Memory Matching, while Pattern Recognition recommendation updates remain isolated to Pattern Recognition.
 * **Localization**: Fully integrated 5-language localization inside `lib/l10n/`.
 
 ### 2. 🌐 `Multilingual/`
@@ -37,19 +58,64 @@ SMARAN/
 ### 3. 🧠 `AI-ML-Analysis/`
 * **Datasets**: `kaggle_dementia_clinical_dataset.csv` and `kaggle_dementia_cognitive_game_telemetry.csv`.
 * **Scripts & Training**: `train_model.py`, `evaluate_telemetry.py`, `cps_analyzer.py`, `data_loader.py`.
-* **Experimental Models**: `cps_regressor.pkl`, `difficulty_classifier.pkl`, `impairment_classifier.pkl`.
+* **Interactive Dashboard**: `AI-ML-Analysis/dashboard/app.py` for model stress testing and edge-case validation.
 
 ### 4. ⚡ `AI-Backend/`
-* **Technologies**: Python 3.11, FastAPI, Uvicorn, Scikit-Learn 1.6.1.
-* **Live Deployment**: [`https://smaran-ai-backend.onrender.com`](https://smaran-ai-backend.onrender.com)
+* **Technologies**: Python 3.11, FastAPI, Uvicorn, Scikit-Learn.
 * **Endpoints**:
+  * `GET /` — API welcome index & docs.
   * `GET /health` — Service health status.
   * `POST /predict-difficulty` — Predicts optimal difficulty level based on session accuracy, completion rate, response time, errors, and hints used.
+  * `POST /analyze-session` — Full diagnostic report, CPS scores, and acute drop anomaly alerts.
 * **Model Pipeline**: `models/smaran_adaptive_pipeline.joblib` (RandomForestClassifier).
 
 ---
 
-## 🔒 Deployment & Verification
+## 🔧 AI API Configuration & Deployment
 
-* **Backend Service**: Deployed on Render (`https://smaran-ai-backend.onrender.com`).
-* **Local Persistence**: Offline-first local SQLite saving executes before remote network calls to ensure zero data loss.
+The AI integration uses a configurable base URL (`SMARAN_API_BASE_URL`) rather than hard-coded hosting endpoints:
+
+### 1. Local Testing (Default)
+When running locally, the Flutter app connects to the FastAPI backend running on port 8000:
+* **Default Base URL**: `http://127.0.0.1:8000`
+* **Command to start local backend**:
+  ```bash
+  cd AI-Backend
+  python -m uvicorn main:app --reload
+  ```
+* **Command to run Flutter app**:
+  ```bash
+  cd Flutter_Game
+  flutter run
+  ```
+
+### 2. Physical Android Device Testing
+When testing on a physical Android phone or tablet on the same local Wi-Fi network:
+* **Base URL**: `http://<YOUR_LOCAL_IP>:8000` (e.g. `http://192.168.1.50:8000`)
+* **Command to run Flutter app**:
+  ```bash
+  flutter run --dart-define=SMARAN_API_BASE_URL=http://192.168.1.50:8000
+  ```
+
+### 3. Production Deployment
+For production deployment, pass the custom production API base URL at build/run time:
+* **Command**:
+  ```bash
+  flutter run --dart-define=SMARAN_API_BASE_URL=https://your-production-api-domain.com
+  ```
+
+---
+
+## 🔒 Offline-First Resilience & Failure Handling
+
+* **Local Persistence First**: Session metrics are saved to local SQLite (`Drift`) **before** sending remote network requests.
+* **Graceful Failure Fallback**: If the API is offline, unreachable, or times out (5s), the AI service returns `null` gracefully. The game continues uninterrupted, retaining the current difficulty level without crashing.
+
+---
+
+## ⚠️ Important Scientific & Clinical Disclaimers
+
+1. **Prototype Model Notice**: The adaptive difficulty model is currently a prototype trained and evaluated using synthetic game-session telemetry data designed to model senior interaction patterns.
+2. **Kaggle Dataset Scope**: The Kaggle cognitive dataset is utilized strictly for baseline cognitive-impairment research and multi-feature experimentation. It is **NOT** used directly as a live game difficulty target.
+3. **Non-Diagnostic Tool**: This system is strictly designed for **real-time game difficulty adjustment** to keep elder players comfortably engaged. It is **NOT** a clinical dementia diagnosis or medical assessment tool.
+4. **Validation Requirements**: Production deployment requires ethically collected longitudinal game telemetry data and rigorous clinical validation.
